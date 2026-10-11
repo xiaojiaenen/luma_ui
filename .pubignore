@@ -1,0 +1,20 @@
+# Generated and local files
+.dart_tool/
+build/
+.idea/
+.DS_Store
+*.iml
+pubspec.lock
+example/.dart_tool/
+example/build/
+example/pubspec.lock
+example/assets/fonts/
+example/test/
+test/
+previews/
+参考/
+.metadata
+复刻方案.md
+本次验证.md
+视觉设计规范.md
+发布检查.md

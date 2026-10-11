@@ -1,0 +1,39 @@
+name: luma_ui
+description: A Flutter UI library with adaptive themes, consistent geometry, rich components, and bundled HarmonyOS Sans and JetBrains Mono fonts.
+version: 0.0.1
+repository: https://github.com/xiaojiaenen/luma_ui
+issue_tracker: https://github.com/xiaojiaenen/luma_ui/issues
+
+environment:
+  sdk: ^3.13.5
+  flutter: ">=3.47.6"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+topics:
+  - ui
+  - widgets
+  - design-system
+  - themes
+
+flutter:
+  uses-material-design: true
+  fonts:
+    - family: HarmonyOSSans
+      fonts:
+        - asset: assets/fonts/HarmonyOS_Sans_SC_Regular.ttf
+          weight: 400
+        - asset: assets/fonts/HarmonyOS_Sans_SC_Medium.ttf
+          weight: 500
+        - asset: assets/fonts/HarmonyOS_Sans_SC_Bold.ttf
+          weight: 700
+    - family: JetBrainsMono
+      fonts:
+        - asset: assets/fonts/JetBrainsMono-Regular.ttf
