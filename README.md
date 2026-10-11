@@ -7,14 +7,14 @@ themes, and expressive color palettes.
 
 ## Install
 
-Once version 0.0.1 is published on pub.dev:
+Available on [pub.dev](https://pub.dev/packages/luma_ui):
 
 ```yaml
 dependencies:
   luma_ui: ^0.0.1
 ```
 
-Before publication, use a local path:
+For local development, use a path dependency:
 
 ```yaml
 dependencies:
