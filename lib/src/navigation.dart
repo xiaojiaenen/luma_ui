@@ -1,3 +1,6 @@
+import 'strings.dart';
+import 'icons.dart';
+
 import 'package:flutter/material.dart';
 
 import 'design.dart';
@@ -127,7 +130,7 @@ class SoftNavigation extends StatelessWidget {
                         child: Semantics(
                           selected: selected == i,
                           child: Tooltip(
-                            message: items[i].label,
+                            message: softText(context, items[i].label),
                             child: TextButton(
                               onPressed: () => onChanged(i),
                               style: TextButton.styleFrom(
@@ -154,7 +157,7 @@ class SoftNavigation extends StatelessWidget {
                                     AnimatedScale(
                                       scale: selected == i ? 1.08 : 1,
                                       duration: SoftMotion.duration(context),
-                                      child: Icon(
+                                      child: SoftIcon(
                                         selected == i
                                             ? items[i].selectedIcon ??
                                                   items[i].icon
@@ -168,7 +171,7 @@ class SoftNavigation extends StatelessWidget {
                                     if (!compact) ...[
                                       const SizedBox(height: 4),
                                       Text(
-                                        items[i].label,
+                                        softText(context, items[i].label),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -212,11 +215,11 @@ class SoftNavigation extends StatelessWidget {
                 customBorder: shape(outerRadius),
                 child: Semantics(
                   button: true,
-                  label: actionLabel,
+                  label: softText(context, actionLabel),
                   enabled: onAction != null,
                   child: Tooltip(
-                    message: actionLabel,
-                    child: Icon(
+                    message: softText(context, actionLabel),
+                    child: SoftIcon(
                       actionIcon,
                       color: onAction == null
                           ? SoftDesign.of(context).muted

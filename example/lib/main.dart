@@ -26,7 +26,7 @@ void main() => runApp(
         accentColor: galleryAccent.value,
         brightness: Brightness.dark,
       ),
-      home: SoftDesign(accent: galleryAccent.value, child: const Gallery()),
+      home: const Gallery(),
     ),
   ),
 );

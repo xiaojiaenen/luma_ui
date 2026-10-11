@@ -1,3 +1,6 @@
+import 'strings.dart';
+import 'icons.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -35,10 +38,10 @@ class SoftCalendar extends StatelessWidget {
           Row(
             children: [
               IconButton(
-                tooltip: 'Previous month',
+                tooltip: softText(context, 'Previous month'),
                 onPressed: () =>
                     onMonthChanged(DateTime(month.year, month.month - 1)),
-                icon: const Icon(Icons.chevron_left),
+                icon: const SoftIcon(Icons.chevron_left),
               ),
               Expanded(
                 child: Text(
@@ -50,10 +53,10 @@ class SoftCalendar extends StatelessWidget {
                 ),
               ),
               IconButton(
-                tooltip: 'Next month',
+                tooltip: softText(context, 'Next month'),
                 onPressed: () =>
                     onMonthChanged(DateTime(month.year, month.month + 1)),
-                icon: const Icon(Icons.chevron_right),
+                icon: const SoftIcon(Icons.chevron_right),
               ),
             ],
           ),
@@ -137,7 +140,7 @@ class SoftCalendar extends StatelessWidget {
               Expanded(
                 child: Center(
                   child: Text(
-                    d,
+                    softText(context, d),
                     style: TextStyle(
                       fontSize: 11,
                       color: SoftDesign.of(context).muted,
@@ -199,7 +202,7 @@ class SoftCalendar extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            child: Text('$day'),
+                            child: Text(softText(context, '$day')),
                           ),
                         ),
                       );
@@ -251,7 +254,18 @@ class SoftWeekStrip extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        ['M', 'T', 'W', 'T', 'F', 'S', 'S'][date.weekday - 1],
+                        softText(
+                          context,
+                          [
+                            'weekstrip.mon',
+                            'weekstrip.tue',
+                            'weekstrip.wed',
+                            'weekstrip.thu',
+                            'weekstrip.fri',
+                            'weekstrip.sat',
+                            'weekstrip.sun',
+                          ][date.weekday - 1],
+                        ),
                         style: TextStyle(
                           fontSize: 11,
                           color: SoftDesign.of(context).muted,
@@ -372,7 +386,7 @@ class SoftAgenda extends StatelessWidget {
                 color: SoftDesign.of(context).muted,
               ),
             ),
-            trailing: const Icon(Icons.chevron_right, size: 18),
+            trailing: const SoftIcon(Icons.chevron_right, size: 18),
           ),
         )
         .toList(),
@@ -415,7 +429,7 @@ class SoftAppointmentCard extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         SoftButton(
-          label: 'Join meeting',
+          label: softText(context, 'Join meeting'),
           icon: Icons.videocam_outlined,
           onPressed: onJoin,
         ),

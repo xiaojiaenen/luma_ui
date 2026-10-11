@@ -1,3 +1,6 @@
+import 'strings.dart';
+import 'icons.dart';
+
 import 'package:flutter/material.dart';
 
 import 'components.dart';
@@ -53,11 +56,11 @@ class SoftTextField extends StatelessWidget {
     textInputAction: textInputAction,
     maxLines: obscureText ? 1 : maxLines,
     decoration: InputDecoration(
-      labelText: label,
-      hintText: hint,
+      labelText: softText(context, label),
+      hintText: hint == null ? null : softText(context, hint!),
       errorText: errorText,
       helperText: helperText,
-      prefixIcon: prefixIcon == null ? null : Icon(prefixIcon),
+      prefixIcon: prefixIcon == null ? null : SoftIcon(prefixIcon),
       suffixIcon: loading
           ? Padding(
               padding: EdgeInsets.all(14),
@@ -67,7 +70,7 @@ class SoftTextField extends StatelessWidget {
                 child: CircularProgressIndicator(
                   value: MediaQuery.disableAnimationsOf(context) ? 1 : null,
                   strokeWidth: 2,
-                  semanticsLabel: 'Loading',
+                  semanticsLabel: softText(context, 'Loading'),
                 ),
               ),
             )
@@ -108,7 +111,7 @@ class SoftSelect<T> extends StatelessWidget {
           isFocused: Focus.of(context).hasFocus,
           isEmpty: value == null,
           decoration: InputDecoration(
-            labelText: label,
+            labelText: softText(context, label),
             errorText: errorText ?? field.errorText,
             enabled: enabled && onChanged != null,
           ),
@@ -160,7 +163,7 @@ class SoftSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SwitchListTile(
     contentPadding: EdgeInsets.zero,
-    title: Text(label),
+    title: Text(softText(context, label)),
     value: value,
     activeThumbColor: SoftDesign.of(context).onAccent,
     activeTrackColor: SoftDesign.of(context).accent,
@@ -182,7 +185,7 @@ class SoftCheckbox extends StatelessWidget {
   Widget build(BuildContext context) => CheckboxListTile(
     contentPadding: EdgeInsets.zero,
     controlAffinity: ListTileControlAffinity.leading,
-    title: Text(label),
+    title: Text(softText(context, label)),
     value: value,
     activeColor: SoftDesign.of(context).ink,
     checkColor: SoftDesign.of(context).surface,
@@ -209,7 +212,7 @@ class SoftSlider extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text('$label · ${value.toStringAsFixed(0)}'),
+      Text(softText(context, '$label · ${value.toStringAsFixed(0)}')),
       Slider(
         value: value,
         min: min,
@@ -243,7 +246,7 @@ class SoftAlert extends StatelessWidget {
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 22, color: SoftDesign.of(context).color(tone)),
+        SoftIcon(icon, size: 22, color: SoftDesign.of(context).color(tone)),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -258,8 +261,8 @@ class SoftAlert extends StatelessWidget {
         if (onDismiss != null)
           IconButton(
             onPressed: onDismiss,
-            tooltip: 'Dismiss',
-            icon: const Icon(Icons.close, size: 18),
+            tooltip: softText(context, 'Dismiss'),
+            icon: const SoftIcon(Icons.close, size: 18),
           ),
       ],
     ),
@@ -302,7 +305,7 @@ class SoftBadge extends StatelessWidget {
   final Widget child;
   @override
   Widget build(BuildContext context) => Badge(
-    label: Text(label),
+    label: Text(softText(context, label)),
     backgroundColor: SoftDesign.of(context).ink,
     textColor: Colors.white,
     child: child,
@@ -397,7 +400,7 @@ class SoftSkeleton extends StatelessWidget {
   final double? width;
   @override
   Widget build(BuildContext context) => Semantics(
-    label: 'Loading',
+    label: softText(context, 'Loading'),
     child: Container(
       height: height,
       width: width,
@@ -429,16 +432,16 @@ class SoftPagination extends StatelessWidget {
         onPressed: page > 1 && onChanged != null
             ? () => onChanged!(page - 1)
             : null,
-        tooltip: 'Previous page',
-        icon: const Icon(Icons.chevron_left),
+        tooltip: softText(context, 'Previous page'),
+        icon: const SoftIcon(Icons.chevron_left),
       ),
-      Text('$page / $pages'),
+      Text(softText(context, '$page / $pages')),
       IconButton(
         onPressed: page < pages && onChanged != null
             ? () => onChanged!(page + 1)
             : null,
-        tooltip: 'Next page',
-        icon: const Icon(Icons.chevron_right),
+        tooltip: softText(context, 'Next page'),
+        icon: const SoftIcon(Icons.chevron_right),
       ),
     ],
   );
@@ -472,7 +475,7 @@ class SoftBreadcrumbs extends StatelessWidget {
     crossAxisAlignment: WrapCrossAlignment.center,
     children: [
       for (var i = 0; i < labels.length; i++) ...[
-        if (i > 0) const Icon(Icons.chevron_right, size: 16),
+        if (i > 0) const SoftIcon(Icons.chevron_right, size: 16),
         TextButton(
           onPressed: i == labels.length - 1 ? null : () => onSelected(i),
           child: Text(labels[i]),
@@ -586,7 +589,7 @@ class SoftMenu extends StatelessWidget {
   final ValueChanged<String> onSelected;
   @override
   Widget build(BuildContext context) => PopupMenuButton<String>(
-    tooltip: 'Open menu',
+    tooltip: softText(context, 'Open menu'),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(SoftDesign.of(context).controlRadius),
     ),
@@ -609,7 +612,8 @@ class SoftDateField extends StatelessWidget {
   final String label;
   @override
   Widget build(BuildContext context) => SoftButton(
-    label: '$label · ${value.year}/${value.month}/${value.day}',
+    label:
+        '${softText(context, label)} · ${value.year}/${value.month}/${value.day}',
     icon: Icons.calendar_today_outlined,
     onPressed: () async {
       var selected = value;
@@ -621,7 +625,10 @@ class SoftDateField extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('选择日期', style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                softText(context, '选择日期'),
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
               const SizedBox(height: 20),
               SoftCalendar(
                 month: month,
@@ -668,10 +675,13 @@ class SoftTimeField extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('选择时间', style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                softText(context, '选择时间'),
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
               const SizedBox(height: 8),
               Text(
-                '24 小时制',
+                softText(context, '24 小时制'),
                 style: TextStyle(color: SoftDesign.of(context).muted),
               ),
               const SizedBox(height: 24),
@@ -680,19 +690,22 @@ class SoftTimeField extends StatelessWidget {
                   Expanded(
                     child: _timeColumn(
                       context,
-                      '小时',
+                      softText(context, '小时'),
                       hour,
                       (delta) => update(() => hour = (hour + delta) % 24),
                     ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12),
-                    child: Text(':', style: TextStyle(fontSize: 32)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      softText(context, ':'),
+                      style: TextStyle(fontSize: 32),
+                    ),
                   ),
                   Expanded(
                     child: _timeColumn(
                       context,
-                      '分钟',
+                      softText(context, '分钟'),
                       minute,
                       (delta) => update(() => minute = (minute + delta) % 60),
                     ),
@@ -758,7 +771,7 @@ class SoftTable extends StatelessWidget {
     if (loading) {
       return Semantics(
         liveRegion: true,
-        label: 'Loading table',
+        label: softText(context, 'Loading table'),
         child: SoftSurface(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -767,7 +780,7 @@ class SoftTable extends StatelessWidget {
                 value: MediaQuery.disableAnimationsOf(context) ? 1 : null,
               ),
               const SizedBox(height: 16),
-              const Text('Loading…'),
+              Text(softText(context, 'Loading…')),
             ],
           ),
         ),
@@ -781,20 +794,21 @@ class SoftTable extends StatelessWidget {
             Semantics(
               liveRegion: true,
               child: SoftAlert(
-                title: 'Unable to load table',
+                title: softText(context, 'Unable to load table'),
                 tone: SoftTone.error,
                 message: errorText!,
               ),
             ),
-            if (onRetry != null) SoftButton(label: 'Retry', onPressed: onRetry),
+            if (onRetry != null)
+              SoftButton(label: softText(context, 'Retry'), onPressed: onRetry),
           ],
         ),
       );
     }
     if (rows.isEmpty || columns.isEmpty) {
-      return const SoftEmptyState(
-        title: 'No rows',
-        description: 'Change filters or add a record.',
+      return SoftEmptyState(
+        title: softText(context, 'No rows'),
+        description: softText(context, 'Change filters or add a record.'),
       );
     }
     assert(
@@ -915,8 +929,11 @@ class SoftSteps extends StatelessWidget {
               ? SoftDesign.of(context).tint
               : SoftDesign.of(context).background,
           child: i < current
-              ? const Icon(Icons.check, size: 16)
-              : Text('${i + 1}', style: const TextStyle(fontSize: 12)),
+              ? const SoftIcon(Icons.check, size: 16)
+              : Text(
+                  softText(context, '${i + 1}'),
+                  style: const TextStyle(fontSize: 12),
+                ),
         ),
         onTap: () => onSelected(i),
       ),
@@ -953,9 +970,16 @@ Future<T?> _showFieldPicker<T>(
 Widget _pickerActions(BuildContext context, VoidCallback confirm) => Row(
   mainAxisAlignment: MainAxisAlignment.end,
   children: [
-    SoftButton(label: '取消', onPressed: () => Navigator.pop(context)),
+    SoftButton(
+      label: softText(context, '取消'),
+      onPressed: () => Navigator.pop(context),
+    ),
     const SizedBox(width: 12),
-    SoftButton(label: '确定', primary: true, onPressed: confirm),
+    SoftButton(
+      label: softText(context, '确定'),
+      primary: true,
+      onPressed: confirm,
+    ),
   ],
 );
 
@@ -970,11 +994,16 @@ Widget _timeColumn(
   child: Column(
     mainAxisSize: MainAxisSize.min,
     children: [
-      Text(label, style: Theme.of(context).textTheme.labelMedium),
+      Text(
+        softText(context, label),
+        style: Theme.of(context).textTheme.labelMedium,
+      ),
       IconButton(
-        tooltip: '增加$label',
+        tooltip: softText(context, '增加{label}', {
+          'label': softText(context, label),
+        }),
         onPressed: () => change(1),
-        icon: const Icon(Icons.keyboard_arrow_up_rounded),
+        icon: const SoftIcon(Icons.keyboard_arrow_up_rounded),
       ),
       Semantics(
         liveRegion: true,
@@ -995,9 +1024,11 @@ Widget _timeColumn(
         ),
       ),
       IconButton(
-        tooltip: '减少$label',
+        tooltip: softText(context, '减少{label}', {
+          'label': softText(context, label),
+        }),
         onPressed: () => change(-1),
-        icon: const Icon(Icons.keyboard_arrow_down_rounded),
+        icon: const SoftIcon(Icons.keyboard_arrow_down_rounded),
       ),
     ],
   ),

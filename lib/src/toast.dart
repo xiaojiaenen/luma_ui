@@ -1,3 +1,6 @@
+import 'strings.dart';
+import 'icons.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -53,7 +56,7 @@ class SoftToast extends StatelessWidget {
                     SoftDesign.of(context).controlRadius,
                   ),
                 ),
-                child: Icon(
+                child: SoftIcon(
                   icon,
                   color: tone == SoftToastTone.info
                       ? SoftDesign.of(context).ink
@@ -101,8 +104,8 @@ class SoftToast extends StatelessWidget {
               if (onDismiss != null)
                 IconButton(
                   onPressed: onDismiss,
-                  tooltip: 'Dismiss notification',
-                  icon: const Icon(Icons.close_rounded, size: 16),
+                  tooltip: softText(context, 'Dismiss notification'),
+                  icon: const SoftIcon(Icons.close_rounded, size: 16),
                   style: IconButton.styleFrom(
                     foregroundColor: SoftDesign.of(context).muted,
                   ),

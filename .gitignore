@@ -33,3 +33,6 @@ migrate_working_dir/
 # Local reference material and obsolete duplicate example fonts
 /参考/
 /example/assets/fonts/
+
+# Generated visual comparison failures
+**/test/failures/

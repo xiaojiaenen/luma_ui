@@ -1,3 +1,6 @@
+import 'strings.dart';
+import 'icons.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -46,7 +49,7 @@ class SoftAIBubble extends StatelessWidget {
                     SoftDesign.of(context).controlRadius,
                   ),
                 ),
-                child: Icon(
+                child: SoftIcon(
                   Icons.auto_awesome_rounded,
                   size: 18,
                   color: SoftDesign.of(context).roles.ai,
@@ -55,7 +58,7 @@ class SoftAIBubble extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  model,
+                  softText(context, model),
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
@@ -63,7 +66,7 @@ class SoftAIBubble extends StatelessWidget {
                 ),
               ),
               if (status == SoftAIStatus.complete)
-                Icon(
+                SoftIcon(
                   Icons.check_circle_outline_rounded,
                   size: 16,
                   color: SoftDesign.of(context).muted,
@@ -112,12 +115,12 @@ class SoftAIBubble extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  switch (status) {
+                  softText(context, switch (status) {
                     SoftAIStatus.thinking => '正在理解你的想法',
                     SoftAIStatus.streaming => '正在生成…',
                     SoftAIStatus.complete => 'AI 生成内容 · 请核对',
                     SoftAIStatus.error => '生成失败，请重试',
-                  },
+                  }),
                   style: TextStyle(
                     fontSize: 11,
                     color: SoftDesign.of(context).muted,
@@ -128,23 +131,23 @@ class SoftAIBubble extends StatelessWidget {
                       status == SoftAIStatus.streaming) &&
                   onStop != null)
                 IconButton(
-                  tooltip: 'Stop generation',
+                  tooltip: softText(context, 'Stop generation'),
                   onPressed: onStop,
-                  icon: const Icon(Icons.stop_circle_outlined, size: 20),
+                  icon: const SoftIcon(Icons.stop_circle_outlined, size: 20),
                 ),
               if (status == SoftAIStatus.complete && onCopy != null)
                 IconButton(
-                  tooltip: 'Copy response',
+                  tooltip: softText(context, 'Copy response'),
                   onPressed: onCopy,
-                  icon: const Icon(Icons.copy_rounded, size: 18),
+                  icon: const SoftIcon(Icons.copy_rounded, size: 18),
                 ),
               if ((status == SoftAIStatus.complete ||
                       status == SoftAIStatus.error) &&
                   onRetry != null)
                 IconButton(
-                  tooltip: 'Regenerate response',
+                  tooltip: softText(context, 'Regenerate response'),
                   onPressed: onRetry,
-                  icon: const Icon(Icons.refresh_rounded, size: 20),
+                  icon: const SoftIcon(Icons.refresh_rounded, size: 20),
                 ),
             ],
           ),
@@ -185,7 +188,7 @@ class _SoftThinkingIndicatorState extends State<SoftThinkingIndicator>
 
   @override
   Widget build(BuildContext context) => Semantics(
-    label: widget.label,
+    label: softText(context, widget.label),
     liveRegion: true,
     child: Row(
       mainAxisSize: MainAxisSize.min,
@@ -217,7 +220,7 @@ class _SoftThinkingIndicatorState extends State<SoftThinkingIndicator>
         ),
         const SizedBox(width: 10),
         Text(
-          widget.label,
+          softText(context, widget.label),
           style: TextStyle(fontSize: 13, color: SoftDesign.of(context).muted),
         ),
       ],
@@ -251,7 +254,7 @@ class SoftPromptCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              Icon(icon, size: 20),
+              SoftIcon(icon, size: 20),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -275,7 +278,7 @@ class SoftPromptCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.arrow_outward_rounded, size: 16),
+              const SoftIcon(Icons.arrow_outward_rounded, size: 16),
             ],
           ),
         ),

@@ -1,3 +1,5 @@
+import 'strings.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -27,7 +29,7 @@ class _Chart extends StatelessWidget {
     if (data.isEmpty) {
       return SizedBox(
         height: height,
-        child: const Center(child: Text('No chart data')),
+        child: Center(child: Text(softText(context, 'No chart data'))),
       );
     }
     return Semantics(
@@ -377,7 +379,7 @@ class SoftComparisonBars extends StatelessWidget {
                 SizedBox(
                   width: 72,
                   child: Text(
-                    e.key,
+                    softText(context, e.key),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

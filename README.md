@@ -7,11 +7,14 @@ themes, and expressive color palettes.
 
 ## Install
 
+Version **0.0.2** fixes theme inheritance and input borders, and adds configurable
+copy and custom icon rendering. See [CHANGELOG](CHANGELOG.md) for details.
+
 Available on [pub.dev](https://pub.dev/packages/luma_ui):
 
 ```yaml
 dependencies:
-  luma_ui: ^0.0.1
+  luma_ui: ^0.0.2
 ```
 
 For local development, use a path dependency:
@@ -40,10 +43,6 @@ void main() {
       brightness: Brightness.dark,
     ),
     themeMode: ThemeMode.system,
-    builder: (context, child) => SoftDesign(
-      accent: accent,
-      child: child!,
-    ),
     home: const ExamplePage(),
   ));
 }
@@ -66,6 +65,33 @@ class ExamplePage extends StatelessWidget {
   );
 }
 ```
+
+`SoftTokens.theme()` is the single configuration entry point. It stores the
+resolved design in `SoftThemeData`, a Flutter theme extension. All Luma widgets
+read it without requiring a `SoftDesign` ancestor. `SoftDesign` remains available
+for explicit local overrides; omitted values inherit the current theme.
+`SoftTokens` is exported by `luma_ui.dart` (implementation: `src/components.dart`);
+consumers should import the public entry point only.
+
+```dart
+final theme = SoftTokens.theme(
+  accentColor: const Color(0xFF487968),
+  radius: 18,
+  strings: const SoftStrings({
+    'Write a message…': '写点什么…',
+    'Send message': '发送',
+    'Mark as read': '标为已读',
+    '{percent}% downloaded': '已下载 {percent}%',
+  }),
+);
+```
+
+`SoftComposer` also accepts `hintText`, `sendTooltip`, and a `sendIcon` Widget.
+For custom SVG or brand icons, supply `icons: SoftIcons(builder: ...)` to the theme.
+The builder receives the original `IconData` identifier, resolved size and color,
+and can return any Widget. This replaces Luma-owned icons; Flutter controls keep
+framework rendering. See [localization and icons](doc/localization.md) for keys,
+parameter templates and locale switching.
 
 ## Design and fonts
 

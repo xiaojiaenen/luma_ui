@@ -1,3 +1,5 @@
+import 'strings.dart';
+
 import 'package:flutter/material.dart';
 
 import 'components.dart';
@@ -255,7 +257,7 @@ class SoftDetailRows extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    e.key,
+                    softText(context, e.key),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(color: SoftDesign.of(context).muted),

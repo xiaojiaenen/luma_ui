@@ -92,30 +92,50 @@ class SoftDesign extends StatelessWidget {
   const SoftDesign({
     super.key,
     required this.child,
-    this.accent = const Color(0xFF66D8EF),
-    this.radius = defaultRadius,
-    this.spacing = 24,
-    this.shadow = .085,
-    this.controlHeight = 52,
+    Color? accent,
+    double? radius,
+    double? spacing,
+    double? shadow,
+    double? controlHeight,
     this.brightness,
     this.semanticColors,
     this.roleColors,
-    this.cardGradient = SoftGradientPreset.none,
-    this.styles = const SoftComponentStyles(),
-  }) : assert(radius >= 0),
-       assert(spacing >= 0),
-       assert(shadow >= 0 && shadow <= 1),
-       assert(controlHeight >= 48);
+    SoftGradientPreset? cardGradient,
+    SoftComponentStyles? styles,
+    // Public parameter names remain stable; nullable fields distinguish inheritance.
+    // ignore: prefer_initializing_formals
+  }) : _cardGradient = cardGradient,
+       // ignore: prefer_initializing_formals
+       _styles = styles,
+       // ignore: prefer_initializing_formals
+       _accent = accent,
+       _radius = radius,
+       _spacing = spacing,
+       _shadow = shadow,
+       _controlHeight = controlHeight,
+       assert(radius == null || radius >= 0),
+       assert(spacing == null || spacing >= 0),
+       assert(shadow == null || (shadow >= 0 && shadow <= 1)),
+       assert(controlHeight == null || controlHeight >= 48);
+  static const defaultAccent = Color(0xFF66D8EF);
   static const phi = 1.618033988749895;
   static const defaultRadius = 52 / (phi * phi);
   final Widget child;
-  final Color accent;
-  final double radius, spacing, shadow, controlHeight;
+  final Color? _accent;
+  final double? _radius, _spacing, _shadow, _controlHeight;
+  Color get accent => _accent ?? defaultAccent;
+  double get radius => _radius ?? defaultRadius;
+  double get spacing => _spacing ?? 24;
+  double get shadow => _shadow ?? .085;
+  double get controlHeight => _controlHeight ?? 52;
   final Brightness? brightness;
   final SoftSemanticColors? semanticColors;
   final SoftRoleColors? roleColors;
-  final SoftGradientPreset cardGradient;
-  final SoftComponentStyles styles;
+  final SoftGradientPreset? _cardGradient;
+  final SoftComponentStyles? _styles;
+  SoftGradientPreset get cardGradient =>
+      _cardGradient ?? SoftGradientPreset.none;
+  SoftComponentStyles get styles => _styles ?? const SoftComponentStyles();
   bool get isDark => brightness == Brightness.dark;
   double get insetRadius => radius;
   double get controlRadius => radius;
@@ -129,6 +149,10 @@ class SoftDesign extends StatelessWidget {
       isDark ? const Color(0xFF252E38) : const Color(0xFFFCFCFD);
   Color get surfaceEnd =>
       isDark ? const Color(0xFF1D252E) : const Color(0xFFF0F1F3);
+
+  /// Visible control boundary, separate from the decorative white highlight.
+  Color get controlBorder =>
+      isDark ? const Color(0xFF8B9AAB) : const Color(0xFF828A95);
   Color get border => isDark ? const Color(0xFF536171) : Colors.white;
   SoftRoleColors get roles =>
       roleColors ?? (isDark ? SoftRoleColors.dark : SoftRoleColors.light);
@@ -180,53 +204,74 @@ class SoftDesign extends StatelessWidget {
       semanticColors ??
       (isDark ? SoftSemanticColors.dark : SoftSemanticColors.light);
   SoftDesign copyWith({required Widget child}) => SoftDesign(
-    accent: accent,
-    radius: radius,
-    spacing: spacing,
-    shadow: shadow,
-    controlHeight: controlHeight,
+    accent: _accent,
+    radius: _radius,
+    spacing: _spacing,
+    shadow: _shadow,
+    controlHeight: _controlHeight,
     brightness: brightness,
     semanticColors: semanticColors,
     roleColors: roleColors,
-    cardGradient: cardGradient,
-    styles: styles,
+    cardGradient: _cardGradient,
+    styles: _styles,
     child: child,
   );
   static SoftDesign of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<_SoftDesignScope>()?.design ??
+      fromTheme(Theme.of(context));
+
+  static SoftDesign fromTheme(ThemeData theme) =>
+      theme.extension<SoftThemeData>()?.design ??
       SoftDesign(
-        brightness: Theme.of(context).brightness,
+        accent: theme.colorScheme.primary,
+        brightness: theme.brightness,
         child: const SizedBox(),
       );
   @override
   Widget build(BuildContext context) {
     final base = Theme.of(context);
+    final inherited = fromTheme(base);
     final d = SoftDesign(
-      accent: accent,
-      radius: radius,
-      spacing: spacing,
-      shadow: shadow,
-      controlHeight: controlHeight,
+      accent: _accent ?? inherited.accent,
+      radius: _radius ?? inherited.radius,
+      spacing: _spacing ?? inherited.spacing,
+      shadow: _shadow ?? inherited.shadow,
+      controlHeight: _controlHeight ?? inherited.controlHeight,
       brightness: brightness ?? base.brightness,
-      semanticColors: semanticColors,
-      roleColors: roleColors,
-      cardGradient: cardGradient,
-      styles: styles,
+      semanticColors: semanticColors ?? inherited.semanticColors,
+      roleColors: roleColors ?? inherited.roleColors,
+      cardGradient: _cardGradient ?? inherited.cardGradient,
+      styles: _styles ?? inherited.styles,
       child: child,
     );
+    return _SoftDesignScope(
+      design: d,
+      child: AnimatedTheme(
+        data: applyToTheme(base, d),
+        duration: SoftMotion.duration(context, 260),
+        curve: SoftMotion.curve,
+        child: child,
+      ),
+    );
+  }
+
+  /// Builds Material and Luma styles from the same resolved design.
+  static ThemeData applyToTheme(ThemeData base, SoftDesign d) {
     final shape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(radius),
+      borderRadius: BorderRadius.circular(d.radius),
     );
     final border = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(radius),
-      borderSide: BorderSide(color: d.border, width: 1.5),
+      borderRadius: BorderRadius.circular(d.radius),
+      borderSide: BorderSide(color: d.controlBorder, width: 1.5),
     );
     final scheme =
         ColorScheme.fromSeed(
-          seedColor: accent,
+          seedColor: d.accent,
           brightness: d.brightness!,
           surface: d.surface,
         ).copyWith(
+          primary: d.accent,
+          onPrimary: d.onAccent,
           onSurface: d.ink,
           error: d.semantic.error,
           secondary: d.roles.secondary,
@@ -245,7 +290,7 @@ class SoftDesign extends StatelessWidget {
       enabledBorder: border,
       disabledBorder: border.copyWith(
         borderSide: BorderSide(
-          color: d.border.withValues(alpha: .4),
+          color: d.controlBorder.withValues(alpha: .4),
           width: 1.5,
         ),
       ),
@@ -259,7 +304,11 @@ class SoftDesign extends StatelessWidget {
         borderSide: BorderSide(color: d.semantic.error, width: 1.5),
       ),
     );
-    final theme = base.copyWith(
+    return base.copyWith(
+      extensions: [
+        ...base.extensions.values.where((e) => e is! SoftThemeData),
+        SoftThemeData(d),
+      ],
       brightness: d.brightness,
       colorScheme: scheme,
       scaffoldBackgroundColor: d.background,
@@ -306,7 +355,7 @@ class SoftDesign extends StatelessWidget {
         labelStyle: base.textTheme.labelLarge?.copyWith(color: d.ink),
         side: BorderSide(color: d.border),
       ),
-      inputDecorationTheme: styles.input ?? input,
+      inputDecorationTheme: d.styles.input ?? input,
       dialogTheme: base.dialogTheme.copyWith(
         shape: shape,
         backgroundColor: d.surface,
@@ -321,7 +370,7 @@ class SoftDesign extends StatelessWidget {
       tooltipTheme: TooltipThemeData(
         decoration: BoxDecoration(
           color: d.ink,
-          borderRadius: BorderRadius.circular(radius),
+          borderRadius: BorderRadius.circular(d.radius),
         ),
         textStyle: TextStyle(color: d.surface),
       ),
@@ -336,15 +385,6 @@ class SoftDesign extends StatelessWidget {
         dialBackgroundColor: d.tint,
       ),
       dividerColor: d.border.withValues(alpha: .5),
-    );
-    return _SoftDesignScope(
-      design: d,
-      child: AnimatedTheme(
-        data: theme,
-        duration: SoftMotion.duration(context, 260),
-        curve: SoftMotion.curve,
-        child: child,
-      ),
     );
   }
 }
@@ -364,4 +404,35 @@ class _SoftDesignScope extends InheritedWidget {
       design.styles != old.design.styles ||
       design.roleColors != old.design.roleColors ||
       design.cardGradient != old.design.cardGradient;
+}
+
+/// Theme extension shared by Material widgets and Luma components.
+@immutable
+class SoftThemeData extends ThemeExtension<SoftThemeData> {
+  const SoftThemeData(this.design);
+  final SoftDesign design;
+  @override
+  SoftThemeData copyWith({SoftDesign? design}) =>
+      SoftThemeData(design ?? this.design);
+  @override
+  SoftThemeData lerp(covariant SoftThemeData? other, double t) {
+    if (other == null) return this;
+    final a = design, b = other.design;
+    return SoftThemeData(
+      SoftDesign(
+        accent: Color.lerp(a.accent, b.accent, t),
+        radius: a.radius + (b.radius - a.radius) * t,
+        spacing: a.spacing + (b.spacing - a.spacing) * t,
+        shadow: a.shadow + (b.shadow - a.shadow) * t,
+        controlHeight:
+            a.controlHeight + (b.controlHeight - a.controlHeight) * t,
+        brightness: t < .5 ? a.brightness : b.brightness,
+        semanticColors: t < .5 ? a.semanticColors : b.semanticColors,
+        roleColors: t < .5 ? a.roleColors : b.roleColors,
+        cardGradient: t < .5 ? a.cardGradient : b.cardGradient,
+        styles: t < .5 ? a.styles : b.styles,
+        child: const SizedBox(),
+      ),
+    );
+  }
 }

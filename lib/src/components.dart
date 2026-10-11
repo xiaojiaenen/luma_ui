@@ -1,3 +1,6 @@
+import 'strings.dart';
+import 'icons.dart';
+
 import 'package:flutter/material.dart';
 
 import 'design.dart';
@@ -5,12 +8,13 @@ import 'motion.dart';
 import 'materials.dart';
 import 'keyboard.dart';
 
-/// Shared visual tokens. Components never define their own corner radii.
+/// Public theme factory and bundled font tokens, exported by luma_ui.dart.
+/// SoftTokens.theme configures Material and Luma through SoftThemeData.
 abstract final class SoftTokens {
   static const background = Color(0xFFEEF0F2);
   static const ink = Color(0xFF17191C);
   static const muted = Color(0xFF737980);
-  static const accent = Color(0xFF66D8EF);
+  static const accent = SoftDesign.defaultAccent;
   static const tint = Color(0xFFDDF6FA);
   static const fontFamily = 'packages/luma_ui/HarmonyOSSans';
   static const monoFontFamily = 'packages/luma_ui/JetBrainsMono';
@@ -19,98 +23,60 @@ abstract final class SoftTokens {
   static const controlRadius = radius;
   static const space = 24.0;
   static const duration = Duration(milliseconds: 180);
+
+  /// Configure Luma once here. SoftDesign is optional for local overrides.
   static ThemeData theme({
     String? fontFamily = SoftTokens.fontFamily,
     Color accentColor = accent,
     Brightness brightness = Brightness.light,
-  }) => ThemeData(
-    fontFamily: fontFamily,
-    useMaterial3: true,
-    brightness: brightness,
-    scaffoldBackgroundColor: brightness == Brightness.dark
-        ? const Color(0xFF14191F)
-        : background,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: accentColor,
+    double radius = SoftDesign.defaultRadius,
+    double spacing = 24,
+    double shadow = .085,
+    double controlHeight = 52,
+    SoftSemanticColors? semanticColors,
+    SoftRoleColors? roleColors,
+    SoftGradientPreset cardGradient = SoftGradientPreset.none,
+    SoftComponentStyles styles = const SoftComponentStyles(),
+    SoftStrings? strings,
+    SoftIcons? icons,
+  }) {
+    final design = SoftDesign(
+      accent: accentColor,
+      radius: radius,
+      spacing: spacing,
+      shadow: shadow,
+      controlHeight: controlHeight,
       brightness: brightness,
-      surface: brightness == Brightness.dark
-          ? const Color(0xFF252E38)
-          : background,
-    ),
-    dialogTheme: DialogThemeData(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(radius),
-      ),
-    ),
-    datePickerTheme: DatePickerThemeData(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(radius),
-      ),
-      backgroundColor: brightness == Brightness.dark
-          ? const Color(0xFF252E38)
-          : background,
-      headerBackgroundColor: Color.lerp(
-        brightness == Brightness.dark ? const Color(0xFF252E38) : Colors.white,
-        accentColor,
-        .24,
-      ),
-    ),
-    timePickerTheme: TimePickerThemeData(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(radius),
-      ),
-      backgroundColor: brightness == Brightness.dark
-          ? const Color(0xFF252E38)
-          : background,
-      dialBackgroundColor: Color.lerp(
-        brightness == Brightness.dark ? const Color(0xFF252E38) : Colors.white,
-        accentColor,
-        .24,
-      ),
-    ),
-    iconButtonTheme: IconButtonThemeData(
-      style: IconButton.styleFrom(
-        minimumSize: const Size(48, 48),
-        foregroundColor: brightness == Brightness.dark
-            ? const Color(0xFFF1F4F6)
-            : ink,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radius),
+      semanticColors: semanticColors,
+      roleColors: roleColors,
+      cardGradient: cardGradient,
+      styles: styles,
+      child: const SizedBox(),
+    );
+    return SoftDesign.applyToTheme(
+      ThemeData(
+        fontFamily: fontFamily,
+        useMaterial3: true,
+        brightness: brightness,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: accentColor,
+          brightness: brightness,
+        ),
+        extensions: [?strings, ?icons],
+        textTheme: const TextTheme(
+          headlineMedium: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -1,
+          ),
+          titleLarge: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+          titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          bodyMedium: TextStyle(fontSize: 14, height: 1.5),
         ),
       ),
-    ),
-    popupMenuTheme: PopupMenuThemeData(
-      color: brightness == Brightness.dark
-          ? const Color(0xFF252E38)
-          : Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(controlRadius),
-      ),
-    ),
-    textTheme: TextTheme(
-      headlineMedium: TextStyle(
-        fontSize: 30,
-        fontWeight: FontWeight.w600,
-        color: brightness == Brightness.dark ? const Color(0xFFF1F4F6) : ink,
-        letterSpacing: -1,
-      ),
-      titleLarge: TextStyle(
-        fontSize: 22,
-        fontWeight: FontWeight.w600,
-        color: brightness == Brightness.dark ? const Color(0xFFF1F4F6) : ink,
-      ),
-      titleMedium: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        color: brightness == Brightness.dark ? const Color(0xFFF1F4F6) : ink,
-      ),
-      bodyMedium: TextStyle(
-        fontSize: 14,
-        color: brightness == Brightness.dark ? const Color(0xFFADB8C3) : muted,
-        height: 1.5,
-      ),
-    ),
-  );
+      design,
+    );
+  }
 }
 
 class SoftSurface extends StatelessWidget {
@@ -325,17 +291,17 @@ class SoftButton extends StatelessWidget {
                     value: MediaQuery.disableAnimationsOf(context) ? 1 : null,
                     strokeWidth: 2,
                     color: d.muted,
-                    semanticsLabel: 'Loading',
+                    semanticsLabel: softText(context, 'Loading'),
                   ),
                 ),
                 const SizedBox(width: 8),
               ] else if (icon != null) ...[
-                Icon(icon, size: 18),
+                SoftIcon(icon, size: 18),
                 const SizedBox(width: 8),
               ],
               Flexible(
                 child: Text(
-                  label,
+                  softText(context, label),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -403,7 +369,7 @@ class ProfileCard extends StatelessWidget {
                   .withValues(alpha: .3),
               backgroundImage: avatar,
               child: avatar == null
-                  ? Icon(
+                  ? SoftIcon(
                       Icons.person_outline_rounded,
                       size: 32,
                       color: SoftDesign.of(context).ink,
@@ -438,17 +404,23 @@ class ProfileCard extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: SoftButton(label: 'Get in touch', onPressed: onContact),
+              child: SoftButton(
+                label: softText(context, 'Get in touch'),
+                onPressed: onContact,
+              ),
             ),
             const SizedBox(width: 12),
             IconButton.filledTonal(
               onPressed: onBookmark,
-              tooltip: bookmarked ? 'Remove bookmark' : 'Bookmark',
+              tooltip: softText(
+                context,
+                bookmarked ? 'Remove bookmark' : 'Bookmark',
+              ),
               style: IconButton.styleFrom(
                 backgroundColor: SoftDesign.of(context).surface,
                 minimumSize: const Size(52, 52),
               ),
-              icon: Icon(
+              icon: SoftIcon(
                 bookmarked
                     ? Icons.bookmark_rounded
                     : Icons.bookmark_border_rounded,
@@ -534,7 +506,7 @@ class SoftSegmented extends StatelessWidget {
                               ),
                             ),
                             child: Text(
-                              labels[i],
+                              softText(context, labels[i]),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: Theme.of(context).textTheme.labelLarge
@@ -597,8 +569,8 @@ class AnalyticsCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  const Text(
-                    'Overview · demo data',
+                  Text(
+                    softText(context, 'Overview · demo data'),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -641,19 +613,35 @@ class AnalyticsCard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        const Row(
+        Row(
           children: [
             Expanded(
-              child: Text('Jan', maxLines: 1, overflow: TextOverflow.ellipsis),
+              child: Text(
+                softText(context, 'Jan'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
             Expanded(
-              child: Text('Mar', maxLines: 1, overflow: TextOverflow.ellipsis),
+              child: Text(
+                softText(context, 'Mar'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
             Expanded(
-              child: Text('May', maxLines: 1, overflow: TextOverflow.ellipsis),
+              child: Text(
+                softText(context, 'May'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
             Expanded(
-              child: Text('Jul', maxLines: 1, overflow: TextOverflow.ellipsis),
+              child: Text(
+                softText(context, 'Jul'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
@@ -741,26 +729,32 @@ class UploadCard extends StatelessWidget {
         CircleAvatar(
           radius: 28,
           backgroundColor: SoftDesign.of(context).tint,
-          child: Icon(
+          child: SoftIcon(
             Icons.cloud_upload_outlined,
             color: SoftDesign.of(context).ink,
           ),
         ),
         const SizedBox(height: 20),
         Text(
-          fileName == null
-              ? 'A little space for your files'
-              : 'Your file is on its way',
+          softText(
+            context,
+            fileName == null
+                ? 'A little space for your files'
+                : 'Your file is on its way',
+          ),
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.titleLarge,
         ),
         const SizedBox(height: 8),
-        const Text('Choose a file to get started', textAlign: TextAlign.center),
+        Text(
+          softText(context, 'Choose a file to get started'),
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: 24),
         if (fileName != null) ...[
           Row(
             children: [
-              const Icon(Icons.description_outlined, size: 20),
+              const SoftIcon(Icons.description_outlined, size: 20),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -769,7 +763,7 @@ class UploadCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              Text('${(progress * 100).round()}%'),
+              Text(softText(context, '${(progress * 100).round()}%')),
             ],
           ),
           const SizedBox(height: 12),
@@ -790,13 +784,19 @@ class UploadCard extends StatelessWidget {
           children: [
             if (onCancel != null) ...[
               Expanded(
-                child: SoftButton(label: 'Cancel', onPressed: onCancel),
+                child: SoftButton(
+                  label: softText(context, 'Cancel'),
+                  onPressed: onCancel,
+                ),
               ),
               const SizedBox(width: 12),
             ],
             Expanded(
               child: SoftButton(
-                label: fileName == null ? 'Choose file' : 'Choose another',
+                label: softText(
+                  context,
+                  fileName == null ? 'Choose file' : 'Choose another',
+                ),
                 primary: true,
                 onPressed: onSelect,
               ),
@@ -849,7 +849,15 @@ class ChatBubble extends StatelessWidget {
 }
 
 class SoftComposer extends StatefulWidget {
-  const SoftComposer({super.key, required this.onSend});
+  const SoftComposer({
+    super.key,
+    required this.onSend,
+    this.hintText,
+    this.sendTooltip,
+    this.sendIcon,
+  });
+  final String? hintText, sendTooltip;
+  final Widget? sendIcon;
   final ValueChanged<String> onSend;
   @override
   State<SoftComposer> createState() => _SoftComposerState();
@@ -881,7 +889,7 @@ class _SoftComposerState extends State<SoftComposer> {
           onSubmitted: (_) => send(),
           textInputAction: TextInputAction.send,
           decoration: InputDecoration(
-            hintText: 'Write a message…',
+            hintText: widget.hintText ?? softText(context, 'Write a message…'),
             filled: true,
             fillColor: SoftDesign.of(context).surface,
             contentPadding: const EdgeInsets.all(16),
@@ -897,13 +905,13 @@ class _SoftComposerState extends State<SoftComposer> {
       const SizedBox(width: 8),
       IconButton.filled(
         onPressed: send,
-        tooltip: 'Send message',
+        tooltip: widget.sendTooltip ?? softText(context, 'Send message'),
         style: IconButton.styleFrom(
           backgroundColor: SoftDesign.of(context).accent,
           foregroundColor: SoftDesign.of(context).ink,
           minimumSize: const Size(48, 48),
         ),
-        icon: const Icon(Icons.arrow_upward_rounded),
+        icon: widget.sendIcon ?? const SoftIcon(Icons.arrow_upward_rounded),
       ),
     ],
   );
@@ -927,7 +935,7 @@ class SoftEmptyState extends StatelessWidget {
         CircleAvatar(
           radius: 36,
           backgroundColor: SoftDesign.of(context).tint,
-          child: Icon(
+          child: SoftIcon(
             Icons.notifications_none_rounded,
             size: 36,
             color: SoftDesign.of(context).ink,

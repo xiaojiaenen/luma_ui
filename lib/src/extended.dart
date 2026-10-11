@@ -1,3 +1,6 @@
+import 'strings.dart';
+import 'icons.dart';
+
 import 'package:flutter/material.dart';
 
 import 'components.dart';
@@ -40,9 +43,9 @@ class SoftNumberField extends StatelessWidget {
   Widget build(BuildContext context) => Row(
     children: [
       IconButton(
-        tooltip: 'Decrease',
+        tooltip: softText(context, 'Decrease'),
         onPressed: value > min ? () => onChanged(value - 1) : null,
-        icon: const Icon(Icons.remove),
+        icon: const SoftIcon(Icons.remove),
       ),
       Expanded(
         child: AnimatedSwitcher(
@@ -56,9 +59,9 @@ class SoftNumberField extends StatelessWidget {
         ),
       ),
       IconButton(
-        tooltip: 'Increase',
+        tooltip: softText(context, 'Increase'),
         onPressed: value < max ? () => onChanged(value + 1) : null,
-        icon: const Icon(Icons.add),
+        icon: const SoftIcon(Icons.add),
       ),
     ],
   );
@@ -85,7 +88,7 @@ class _SoftOtpFieldState extends State<SoftOtpField> {
       }
     },
     decoration: InputDecoration(
-      labelText: 'Verification code',
+      labelText: softText(context, 'Verification code'),
       counterText: '${value.length} / ${widget.length}',
       filled: true,
       fillColor: SoftDesign.of(context).surface,
@@ -110,9 +113,9 @@ class SoftRating extends StatelessWidget {
       children: List.generate(
         5,
         (i) => IconButton(
-          tooltip: 'Rate ${i + 1}',
+          tooltip: softText(context, 'Rate {value}', {'value': i + 1}),
           onPressed: onChanged == null ? null : () => onChanged!(i + 1),
-          icon: Icon(
+          icon: SoftIcon(
             i < value ? Icons.star_rounded : Icons.star_outline_rounded,
             color: i < value
                 ? SoftDesign.of(context).ink
@@ -139,7 +142,7 @@ class SoftRangeSlider extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     mainAxisSize: MainAxisSize.min,
     children: [
-      Text('${value.start.round()} — ${value.end.round()}'),
+      Text(softText(context, '${value.start.round()} — ${value.end.round()}')),
       RangeSlider(
         values: value,
         min: min,
@@ -169,7 +172,9 @@ class SoftColorPicker extends StatelessWidget {
     children: colors
         .map(
           (c) => IconButton(
-            tooltip: 'Color ${c.toARGB32().toRadixString(16)}',
+            tooltip: softText(context, 'Color {value}', {
+              'value': c.toARGB32().toRadixString(16),
+            }),
             onPressed: () => onChanged(c),
             style: IconButton.styleFrom(
               backgroundColor: c,
@@ -179,7 +184,7 @@ class SoftColorPicker extends StatelessWidget {
                 ),
               ),
             ),
-            icon: Icon(
+            icon: SoftIcon(
               c == value ? Icons.check : Icons.circle_outlined,
               color: SoftDesign.of(context).ink,
               size: 18,
@@ -250,15 +255,6 @@ class SoftFilterBar extends StatelessWidget {
       ),
     ),
   );
-}
-
-class SoftIcon extends StatelessWidget {
-  const SoftIcon(this.icon, {super.key, this.size = 24});
-  final IconData icon;
-  final double size;
-  @override
-  Widget build(BuildContext context) =>
-      Icon(icon, size: size, color: SoftDesign.of(context).ink);
 }
 
 class SoftIconGrid extends StatelessWidget {
@@ -403,7 +399,7 @@ class _Summary extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(icon, size: 22, color: SoftDesign.of(context).ink),
+            SoftIcon(icon, size: 22, color: SoftDesign.of(context).ink),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -437,13 +433,13 @@ class SoftFileTile extends StatelessWidget {
   Widget build(BuildContext context) => SoftListTile(
     title: name,
     subtitle: details,
-    leading: const Icon(Icons.description_outlined),
+    leading: const SoftIcon(Icons.description_outlined),
     trailing: onRemove == null
         ? null
         : IconButton(
-            tooltip: 'Remove file',
+            tooltip: softText(context, 'Remove file'),
             onPressed: onRemove,
-            icon: const Icon(Icons.close, size: 18),
+            icon: const SoftIcon(Icons.close, size: 18),
           ),
   );
 }
@@ -463,7 +459,7 @@ class SoftImageTile extends StatelessWidget {
           child: image == null
               ? ColoredBox(
                   color: SoftDesign.of(context).tint,
-                  child: const Icon(Icons.landscape_outlined, size: 48),
+                  child: const SoftIcon(Icons.landscape_outlined, size: 48),
                 )
               : Image(image: image!, fit: BoxFit.cover),
         ),
@@ -498,7 +494,7 @@ class SoftAudioPlayer extends StatelessWidget {
         Container(
           height: 88,
           alignment: Alignment.center,
-          child: Icon(
+          child: SoftIcon(
             Icons.graphic_eq_rounded,
             size: 56,
             color: Color.lerp(
@@ -522,16 +518,16 @@ class SoftAudioPlayer extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton(
-              tooltip: playing ? 'Pause' : 'Play',
+              tooltip: softText(context, playing ? 'Pause' : 'Play'),
               onPressed: onToggle,
-              icon: Icon(
+              icon: SoftIcon(
                 playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
               ),
             ),
             IconButton(
-              tooltip: 'Next track',
+              tooltip: softText(context, 'Next track'),
               onPressed: onNext,
-              icon: const Icon(Icons.skip_next_rounded),
+              icon: const SoftIcon(Icons.skip_next_rounded),
             ),
           ],
         ),
@@ -563,9 +559,9 @@ class SoftVideoTile extends StatelessWidget {
         ),
         child: Center(
           child: IconButton(
-            tooltip: 'Play video',
+            tooltip: softText(context, 'Play video'),
             onPressed: onPlay,
-            icon: const Icon(Icons.play_arrow_rounded, size: 36),
+            icon: const SoftIcon(Icons.play_arrow_rounded, size: 36),
           ),
         ),
       ),
@@ -597,7 +593,7 @@ class SoftWeatherCard extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Icon(Icons.location_on_outlined, size: 18),
+            const SoftIcon(Icons.location_on_outlined, size: 18),
             const SizedBox(width: 8),
             Expanded(
               child: Text(city, maxLines: 1, overflow: TextOverflow.ellipsis),
@@ -621,7 +617,7 @@ class SoftWeatherCard extends StatelessWidget {
                 ),
               ),
             ),
-            Icon(
+            SoftIcon(
               Icons.wb_sunny_outlined,
               size: 48,
               color: Color.lerp(
@@ -635,7 +631,10 @@ class SoftWeatherCard extends StatelessWidget {
         Text(condition, maxLines: 2, overflow: TextOverflow.ellipsis),
         const SizedBox(height: 24),
         SoftDetailRows(
-          values: {'Humidity': humidity, 'Forecast': 'Local demo'},
+          values: {
+            softText(context, 'Humidity'): humidity,
+            softText(context, 'Forecast'): softText(context, 'Local demo'),
+          },
         ),
       ],
     ),
@@ -676,7 +675,7 @@ class SoftFlightTicket extends StatelessWidget {
             ),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Icon(Icons.flight_takeoff_rounded),
+              child: SoftIcon(Icons.flight_takeoff_rounded),
             ),
             Expanded(
               child: Text(
@@ -690,9 +689,13 @@ class SoftFlightTicket extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 20),
-        const SoftDivider(label: 'BOARDING PASS'),
+        SoftDivider(label: softText(context, 'BOARDING PASS')),
         SoftDetailRows(
-          values: {'Departure': departure, 'Arrival': arrival, 'Gate': gate},
+          values: {
+            softText(context, 'Departure'): departure,
+            softText(context, 'Arrival'): arrival,
+            softText(context, 'Gate'): gate,
+          },
         ),
       ],
     ),
@@ -710,17 +713,17 @@ class SoftHealthCard extends StatelessWidget {
   final String heartRate, distance, calories, hours;
   @override
   Widget build(BuildContext context) => _Summary(
-    title: '$heartRate BPM',
-    subtitle: 'Heart rate · demo data',
+    title: softText(context, '{value} BPM', {'value': heartRate}),
+    subtitle: softText(context, 'Heart rate · demo data'),
     icon: Icons.favorite_border_rounded,
     child: Column(
       children: [
         const SoftLineChart(values: [.2, .4, .35, .8, .3, .5, .4]),
         SoftDetailRows(
           values: {
-            'Distance': distance,
-            'Calories': calories,
-            'Stand hours': hours,
+            softText(context, 'Distance'): distance,
+            softText(context, 'Calories'): calories,
+            softText(context, 'Stand hours'): hours,
           },
         ),
       ],
@@ -752,7 +755,7 @@ class SoftProductCard extends StatelessWidget {
                 SoftDesign.of(context).radius,
               ),
             ),
-            child: const Icon(Icons.checkroom_outlined, size: 52),
+            child: const SoftIcon(Icons.checkroom_outlined, size: 52),
           ),
         ),
         const SizedBox(height: 16),
@@ -769,9 +772,9 @@ class SoftProductCard extends StatelessWidget {
               child: Text(price, maxLines: 1, overflow: TextOverflow.ellipsis),
             ),
             IconButton(
-              tooltip: 'Add to cart',
+              tooltip: softText(context, 'Add to cart'),
               onPressed: onAdd,
-              icon: const Icon(Icons.add),
+              icon: const SoftIcon(Icons.add),
             ),
           ],
         ),
@@ -797,7 +800,7 @@ class SoftPriceCard extends StatelessWidget {
     subtitle: price,
     icon: Icons.workspace_premium_outlined,
     action: SoftButton(
-      label: 'Choose plan',
+      label: softText(context, 'Choose plan'),
       primary: true,
       onPressed: onChoose,
     ),
@@ -809,7 +812,7 @@ class SoftPriceCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 6),
               child: Row(
                 children: [
-                  const Icon(Icons.check, size: 16),
+                  const SoftIcon(Icons.check, size: 16),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -840,7 +843,12 @@ class SoftOrderCard extends StatelessWidget {
     title: number,
     subtitle: status,
     icon: Icons.shopping_bag_outlined,
-    child: SoftDetailRows(values: {'Total': total, 'Status': status}),
+    child: SoftDetailRows(
+      values: {
+        softText(context, 'Total'): total,
+        softText(context, 'Status'): status,
+      },
+    ),
   );
 }
 
@@ -858,7 +866,10 @@ class SoftCouponCard extends StatelessWidget {
     title: code,
     subtitle: description,
     icon: Icons.local_offer_outlined,
-    action: SoftButton(label: 'Apply coupon', onPressed: onApply),
+    action: SoftButton(
+      label: softText(context, 'Apply coupon'),
+      onPressed: onApply,
+    ),
   );
 }
 
@@ -876,7 +887,10 @@ class SoftAddressCard extends StatelessWidget {
     title: name,
     subtitle: address,
     icon: Icons.location_on_outlined,
-    action: SoftButton(label: 'Edit address', onPressed: onEdit),
+    action: SoftButton(
+      label: softText(context, 'Edit address'),
+      onPressed: onEdit,
+    ),
   );
 }
 
@@ -910,12 +924,12 @@ class SoftContactCard extends StatelessWidget {
           runSpacing: 8,
           children: [
             SoftButton(
-              label: 'Message',
+              label: softText(context, 'Message'),
               icon: Icons.chat_bubble_outline_rounded,
               onPressed: onMessage,
             ),
             SoftButton(
-              label: 'Call',
+              label: softText(context, 'Call'),
               icon: Icons.call_outlined,
               onPressed: onCall,
             ),
@@ -943,7 +957,10 @@ class SoftNotificationCard extends StatelessWidget {
     icon: Icons.notifications_none_rounded,
     action: onRead == null
         ? null
-        : SoftButton(label: 'Mark as read', onPressed: onRead),
+        : SoftButton(
+            label: softText(context, 'Mark as read'),
+            onPressed: onRead,
+          ),
     child: Text(time, style: const TextStyle(fontSize: 11)),
   );
 }
@@ -959,7 +976,7 @@ class SoftStorageCard extends StatelessWidget {
   final double fraction;
   @override
   Widget build(BuildContext context) => _Summary(
-    title: 'Storage',
+    title: softText(context, 'Storage'),
     subtitle: '$used / $capacity',
     icon: Icons.cloud_outlined,
     child: SoftProgress(value: fraction),
@@ -979,9 +996,14 @@ class SoftDownloadCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => _Summary(
     title: name,
-    subtitle: '${(progress * 100).round()}% downloaded',
+    subtitle: softText(context, '{percent}% downloaded', {
+      'percent': (progress * 100).round(),
+    }),
     icon: Icons.download_outlined,
-    action: SoftButton(label: 'Cancel download', onPressed: onCancel),
+    action: SoftButton(
+      label: softText(context, 'Cancel download'),
+      onPressed: onCancel,
+    ),
     child: SoftProgress(value: progress),
   );
 }
@@ -1084,7 +1106,7 @@ class SoftActivityFeed extends StatelessWidget {
           (e) => SoftListTile(
             title: e.value,
             subtitle: e.key,
-            leading: const Icon(Icons.history_rounded),
+            leading: const SoftIcon(Icons.history_rounded),
           ),
         )
         .toList(),
@@ -1108,7 +1130,7 @@ class SoftCommentCard extends StatelessWidget {
     icon: Icons.chat_bubble_outline_rounded,
     action: onReply == null
         ? null
-        : SoftButton(label: 'Reply', onPressed: onReply),
+        : SoftButton(label: softText(context, 'Reply'), onPressed: onReply),
     child: Text(time, style: const TextStyle(fontSize: 11)),
   );
 }
@@ -1119,9 +1141,10 @@ class SoftEmptySearch extends StatelessWidget {
   final VoidCallback? onClear;
   @override
   Widget build(BuildContext context) => SoftEmptyState(
-    title: 'No results',
-    description:
-        'No matches for ${query.length > 80 ? '${query.substring(0, 80)}…' : query}',
+    title: softText(context, 'No results'),
+    description: softText(context, 'No matches for {query}', {
+      'query': query.length > 80 ? '${query.substring(0, 80)}…' : query,
+    }),
     actionLabel: 'Clear search',
     onAction: onClear,
   );
@@ -1133,7 +1156,7 @@ class SoftErrorState extends StatelessWidget {
   final VoidCallback? onRetry;
   @override
   Widget build(BuildContext context) => SoftEmptyState(
-    title: 'Something needs attention',
+    title: softText(context, 'Something needs attention'),
     description: message,
     actionLabel: 'Try again',
     onAction: onRetry,
@@ -1145,10 +1168,13 @@ class SoftOfflineBanner extends StatelessWidget {
   final VoidCallback? onReconnect;
   @override
   Widget build(BuildContext context) => _Summary(
-    title: 'You are offline',
-    subtitle: 'Changes will sync when you reconnect.',
+    title: softText(context, 'You are offline'),
+    subtitle: softText(context, 'Changes will sync when you reconnect.'),
     icon: Icons.wifi_off_rounded,
-    action: SoftButton(label: 'Reconnect', onPressed: onReconnect),
+    action: SoftButton(
+      label: softText(context, 'Reconnect'),
+      onPressed: onReconnect,
+    ),
   );
 }
 
@@ -1165,10 +1191,10 @@ class SoftConnectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => _Summary(
     title: name,
-    subtitle: connected ? 'Connected' : 'Disconnected',
+    subtitle: softText(context, connected ? 'Connected' : 'Disconnected'),
     icon: Icons.bluetooth_rounded,
     child: SoftSwitch(
-      label: 'Connection',
+      label: softText(context, 'Connection'),
       value: connected,
       onChanged: onChanged,
     ),
@@ -1194,8 +1220,12 @@ class SoftPermissionCard extends StatelessWidget {
       spacing: 8,
       runSpacing: 8,
       children: [
-        SoftButton(label: 'Not now', onPressed: onDecline),
-        SoftButton(label: 'Allow', primary: true, onPressed: onAllow),
+        SoftButton(label: softText(context, 'Not now'), onPressed: onDecline),
+        SoftButton(
+          label: softText(context, 'Allow'),
+          primary: true,
+          onPressed: onAllow,
+        ),
       ],
     ),
   );
@@ -1234,8 +1264,8 @@ class SoftAISourceCard extends StatelessWidget {
   Widget build(BuildContext context) => SoftListTile(
     title: title,
     subtitle: source,
-    leading: const Icon(Icons.link_rounded),
-    trailing: const Icon(Icons.arrow_outward, size: 18),
+    leading: const SoftIcon(Icons.link_rounded),
+    trailing: const SoftIcon(Icons.arrow_outward, size: 18),
     onTap: onOpen,
   );
 }
@@ -1252,7 +1282,7 @@ class SoftAIModelSelect extends StatelessWidget {
   final ValueChanged<String> onChanged;
   @override
   Widget build(BuildContext context) => SoftSelect<String>(
-    label: 'AI model',
+    label: softText(context, 'AI model'),
     items: models,
     value: value,
     onChanged: (v) {
@@ -1268,8 +1298,11 @@ class SoftTokenUsage extends StatelessWidget {
   final int used, limit;
   @override
   Widget build(BuildContext context) => _Summary(
-    title: 'Context usage',
-    subtitle: '$used / $limit tokens',
+    title: softText(context, 'Context usage'),
+    subtitle: softText(context, '{used} / {limit} tokens', {
+      'used': used,
+      'limit': limit,
+    }),
     icon: Icons.data_usage_rounded,
     child: SoftProgress(value: limit <= 0 ? 0 : (used / limit).clamp(0, 1)),
   );
@@ -1338,7 +1371,11 @@ class SoftMetricCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+        Text(
+          softText(context, label),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         const SizedBox(height: 12),
         Text(
           value,
@@ -1420,12 +1457,12 @@ class SoftNotificationPreference extends StatelessWidget {
     mainAxisSize: MainAxisSize.min,
     children: [
       SoftSwitch(
-        label: 'Email updates',
+        label: softText(context, 'Email updates'),
         value: email,
         onChanged: onEmailChanged,
       ),
       SoftSwitch(
-        label: 'Push notifications',
+        label: softText(context, 'Push notifications'),
         value: push,
         onChanged: onPushChanged,
       ),
@@ -1445,7 +1482,7 @@ class SoftCommandItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SoftListTile(
     title: label,
-    leading: const Icon(Icons.terminal_rounded),
+    leading: const SoftIcon(Icons.terminal_rounded),
     trailing: SoftKbd(shortcut),
     onTap: onTap,
   );
@@ -1472,10 +1509,10 @@ class SoftUploadZone extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.cloud_upload_outlined, size: 36),
+              const SoftIcon(Icons.cloud_upload_outlined, size: 36),
               const SizedBox(height: 16),
               Text(
-                label,
+                softText(context, label),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,

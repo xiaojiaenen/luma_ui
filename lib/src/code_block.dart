@@ -1,3 +1,6 @@
+import 'strings.dart';
+import 'icons.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -121,14 +124,14 @@ class SoftCodeBlock extends StatelessWidget {
                 ),
               ),
               IconButton(
-                tooltip: 'Copy code',
+                tooltip: softText(context, 'Copy code'),
                 onPressed: () async {
                   await Clipboard.setData(ClipboardData(text: code));
                   if (context.mounted) {
                     showSoftToast(context, '代码已复制');
                   }
                 },
-                icon: const Icon(
+                icon: const SoftIcon(
                   Icons.copy_rounded,
                   size: 16,
                   color: Colors.white70,
